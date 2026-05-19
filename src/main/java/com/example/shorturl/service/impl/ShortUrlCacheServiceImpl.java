@@ -1,6 +1,6 @@
-package com.example.shorturl.config.impl;
+package com.example.shorturl.service.impl;
 
-import com.example.shorturl.config.ShortUrlCacheService;
+import com.example.shorturl.service.ShortUrlCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -65,6 +65,7 @@ public class ShortUrlCacheServiceImpl implements ShortUrlCacheService {
     }
 
     private static long computeTtlWithJitter() {
+        // BASE_TTL * (random in [-0.5, 0.5)) * 0.2 gives ±10% jitter
         long jitter = (long) (BASE_TTL * (Math.random() - 0.5) * 0.2);
         return BASE_TTL + jitter;
     }

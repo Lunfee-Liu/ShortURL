@@ -1,4 +1,4 @@
-package com.example.shorturl.config;
+package com.example.shorturl.service;
 
 public interface ShortUrlCacheService {
 

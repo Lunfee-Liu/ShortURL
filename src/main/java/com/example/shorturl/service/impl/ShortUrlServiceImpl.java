@@ -1,11 +1,11 @@
 package com.example.shorturl.service.impl;
 
 import com.example.shorturl.common.ErrorCode;
-import com.example.shorturl.config.ShortUrlCacheService;
+import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
 import com.example.shorturl.exception.BizException;
-import com.example.shorturl.generator.strategy.Base62ShortCodeGenerator;
+import com.example.shorturl.generator.ShortCodeGenerator;
 import com.example.shorturl.mapper.ShortUrlMapper;
 import com.example.shorturl.service.ShortUrlService;
 import com.example.shorturl.vo.ShortUrlQueryVO;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class ShortUrlServiceImpl implements ShortUrlService {
 
     private final ShortUrlMapper shortUrlMapper;
-    private final Base62ShortCodeGenerator shortCodeGenerator;
+    private final ShortCodeGenerator shortCodeGenerator;
     private final ShortUrlCacheService cacheService;
 
     @Value("${shorturl.base-url:http://localhost:8080}")
