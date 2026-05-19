@@ -32,6 +32,9 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+shorturl:
+  base-url: http://localhost:8080
+
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: com.example.shorturl.entity
