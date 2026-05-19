@@ -51,12 +51,14 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         shortUrlMapper.updateByPrimaryKey(record);
 
         // Phase 3: write to Redis cache after transaction commits
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                cacheService.cacheShortUrl(shortCode, originalUrl);
-            }
-        });
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    cacheService.cacheShortUrl(shortCode, originalUrl);
+                }
+            });
+        }
 
         // Phase 4: build VO
         ShortUrlVO vo = new ShortUrlVO();
