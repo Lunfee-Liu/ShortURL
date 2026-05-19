@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/shorturl?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true"
+    hikari:
+      connection-timeout: 5000
+
+logging:
+  level:
+    com.example.shorturl: DEBUG
+    com.example.shorturl.mapper: TRACE

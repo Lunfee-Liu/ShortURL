@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.shorturl.mapper.ShortUrlMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.shorturl.entity.ShortUrlDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="short_code" property="shortCode" jdbcType="VARCHAR"/>
+        <result column="original_url" property="originalUrl" jdbcType="VARCHAR"/>
+        <result column="shard_key" property="shardKey" jdbcType="VARCHAR"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, short_code, original_url, shard_key, is_deleted, created_at, updated_at
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.example.shorturl.entity.ShortUrlDO">
+        INSERT INTO short_urls (short_code, original_url, shard_key, is_deleted, created_at, updated_at)
+        VALUES (#{shortCode,jdbcType=VARCHAR},
+                #{originalUrl,jdbcType=VARCHAR},
+                #{shardKey,jdbcType=VARCHAR},
+                #{isDeleted,jdbcType=TINYINT},
+                #{createdAt,jdbcType=TIMESTAMP},
+                #{updatedAt,jdbcType=TIMESTAMP})
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM short_urls
+        WHERE id = #{id,jdbcType=BIGINT}
+          AND is_deleted = 0
+    </select>
+
+    <select id="selectByShortCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM short_urls
+        WHERE short_code = #{shortCode,jdbcType=VARCHAR}
+          AND is_deleted = 0
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM short_urls
+        WHERE is_deleted = 0
+    </select>
+
+    <update id="updateByPrimaryKey"
+            parameterType="com.example.shorturl.entity.ShortUrlDO">
+        UPDATE short_urls
+        SET short_code   = #{shortCode,jdbcType=VARCHAR},
+            original_url = #{originalUrl,jdbcType=VARCHAR},
+            shard_key    = #{shardKey,jdbcType=VARCHAR},
+            is_deleted   = #{isDeleted,jdbcType=TINYINT},
+            updated_at   = #{updatedAt,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- logical delete: set is_deleted = 1 instead of physical DELETE -->
+    <update id="deleteByPrimaryKey">
+        UPDATE short_urls
+        SET is_deleted = 1
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>
