@@ -18,3 +18,7 @@ logs/
 
 .env
 *.env.local
+
+# Claude Code — local-only files (personal permissions & runtime worktrees)
+.claude/settings.local.json
+.claude/worktrees/
