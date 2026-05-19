@@ -188,8 +188,8 @@ mvn mybatis-generator:generate
 
 # 当前进度
 
-- [ ] M1: 项目骨架 + 依赖环境（docker-compose、Flyway、MyBatis Generator 跑通）
-- [ ] M2: 短链生成 + 跳转（含 Redis 缓存）
+- [x] M1: 项目骨架 + 依赖环境（docker-compose、Flyway、MyBatis Generator 跑通）
+- [x] M2: 短链生成 + 跳转（含 Redis 缓存）
 - [ ] M3: 访问统计（异步记录）
 - [ ] M4: 限流 + 监控（Actuator + Micrometer）
 - [ ] M5: 压测（JMeter / wrk）验证 1k QPS
