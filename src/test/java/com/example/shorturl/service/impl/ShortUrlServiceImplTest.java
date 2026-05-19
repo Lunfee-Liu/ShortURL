@@ -1,10 +1,11 @@
 package com.example.shorturl.service.impl;
 
 import com.example.shorturl.common.ErrorCode;
-import com.example.shorturl.config.ShortUrlCacheService;
+import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
 import com.example.shorturl.exception.BizException;
+import com.example.shorturl.generator.ShortCodeGenerator;
 import com.example.shorturl.generator.strategy.Base62ShortCodeGenerator;
 import com.example.shorturl.mapper.ShortUrlMapper;
 import com.example.shorturl.service.ShortUrlService;
@@ -33,7 +34,7 @@ class ShortUrlServiceImplTest {
     @Mock
     private ShortUrlCacheService cacheService;
 
-    private final Base62ShortCodeGenerator shortCodeGenerator = new Base62ShortCodeGenerator();
+    private final ShortCodeGenerator shortCodeGenerator = new Base62ShortCodeGenerator();
     private ShortUrlService shortUrlService;
 
     @BeforeEach

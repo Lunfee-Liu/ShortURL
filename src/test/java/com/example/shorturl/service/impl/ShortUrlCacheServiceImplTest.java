@@ -1,6 +1,6 @@
-package com.example.shorturl.config.impl;
+package com.example.shorturl.service.impl;
 
-import com.example.shorturl.config.ShortUrlCacheService;
+import com.example.shorturl.service.ShortUrlCacheService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

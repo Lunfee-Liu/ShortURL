@@ -4,8 +4,6 @@ import com.example.shorturl.entity.ShortUrlDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
 @Mapper
 public interface ShortUrlMapper {
 
@@ -14,8 +12,6 @@ public interface ShortUrlMapper {
     ShortUrlDO selectByPrimaryKey(Long id);
 
     ShortUrlDO selectByShortCode(@Param("shortCode") String shortCode);
-
-    List<ShortUrlDO> selectAll();
 
     int updateByPrimaryKey(ShortUrlDO row);
 
