@@ -23,6 +23,23 @@ public final class Base62 {
         return sb.reverse().toString();
     }
 
+    public static String encode(long value, String alphabet) {
+        if (alphabet.length() != 62) {
+            throw new IllegalArgumentException("alphabet must be exactly 62 characters, got: " + alphabet.length());
+        }
+        if (value == 0) {
+            return String.valueOf(alphabet.charAt(0));
+        }
+        char[] alpha = alphabet.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        long n = value;
+        while (n > 0) {
+            sb.append(alpha[(int) (n % BASE)]);
+            n /= BASE;
+        }
+        return sb.reverse().toString();
+    }
+
     public static long decode(String value) {
         if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException("input must not be empty");
