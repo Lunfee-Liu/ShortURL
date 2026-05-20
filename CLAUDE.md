@@ -19,6 +19,7 @@
 - MyBatis Generator（逆向生成 entity / mapper / xml）
 - MySQL 8.0
 - Redis 7（Lettuce 客户端，spring-boot-starter-data-redis）
+- Kafka 3.x（spring-kafka；用于访问日志异步削峰，消费端批量写 DB）
 - JUnit 5 + Mockito + AssertJ
 - Lombok
 
@@ -191,7 +192,7 @@ mvn mybatis-generator:generate
 1. **短码生成器抽象为 `ShortCodeGenerator` 接口**，便于切换实现（自增+Base62 → Snowflake / 号段）
 2. **数据库表预留 `shard_key` 字段**（即使阶段一不分片，字段先占位）
 3. **缓存读写抽象为 `ShortUrlCacheService`**，便于阶段二加 Caffeine 本地缓存做二级缓存
-4. **访问日志写入抽象为 `AccessLogRecorder` 接口**，阶段一同步写，阶段二切异步 / Kafka
+4. **访问日志写入抽象为 `AccessLogRecorder` 接口**，M3 直接 Kafka 异步削峰 + 消费端批量写 DB（接口不变，实现可替换）
 5. **接口设计支持批量**：`getByShortCodes(List<String>)` 而不是只有单条
 
 ---
@@ -200,9 +201,9 @@ mvn mybatis-generator:generate
 
 - [x] M1: 项目骨架 + 依赖环境（docker-compose、Flyway、MyBatis Generator 跑通）
 - [x] M2: 短链生成 + 跳转（含 Redis 缓存）
-- [ ] M3: 访问统计（异步记录）
-- [ ] M4: 限流 + 监控（Actuator + Micrometer）
-- [ ] M5: 压测（JMeter / wrk）验证 1k QPS
+- [ ] M3: 访问统计（Kafka 异步削峰 + 消费端批量写 DB）
+- [ ] M4: Caffeine 二级缓存 + Redis 分布式限流 + Actuator 监控
+- [ ] M5: 压测（JMeter / wrk）验证单节点 5-10k QPS + 多节点扩容线性验证
 
 ---
 

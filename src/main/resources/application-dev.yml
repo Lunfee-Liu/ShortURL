@@ -8,3 +8,4 @@ logging:
   level:
     com.example.shorturl: DEBUG
     com.example.shorturl.mapper: TRACE
+    org.springframework.kafka: INFO
