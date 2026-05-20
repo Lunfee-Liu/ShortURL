@@ -204,7 +204,11 @@ mvn mybatis-generator:generate
 - [x] M1: 项目骨架 + 依赖环境（docker-compose、Flyway、MyBatis Generator 跑通）
 - [x] M2: 短链生成 + 跳转（含 Redis 缓存）
 - [x] M3: 访问统计（Kafka 异步削峰 + 消费端批量写 DB）
-- [ ] M4: Caffeine 二级缓存 + Redis 分布式限流 + Actuator 监控
+- [ ] M4: 后台管理页面（Admin UI）
+  - 短链管理：列表查询、新建、停用/删除、访问量统计
+  - 访问日志：按短码查看访问记录（IP、UA、时间）
+  - Redis 监控：当前缓存 key 列表、TTL、命中率
+  - Kafka 监控：topic offset、consumer group lag、消息堆积数
 - [ ] M5: 压测（JMeter / wrk）验证单节点 5-10k QPS + 多节点扩容线性验证
 
 ---
