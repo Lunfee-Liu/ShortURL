@@ -5,6 +5,8 @@ import com.example.shorturl.util.Base62;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
+
 @Component
 public class Base62ShortCodeGenerator implements ShortCodeGenerator {
 
@@ -16,10 +18,15 @@ public class Base62ShortCodeGenerator implements ShortCodeGenerator {
 
     private final String alphabet;
     private final int minCodeLength;
+    private final long scrambleKey;
+    private final long codeOffset;  // = 62^(minCodeLength-1)
+    private final long rangeSize;   // = codeOffset * 61，乘法置换的值域大小
 
     public Base62ShortCodeGenerator(
             @Value("${shorturl.generator.alphabet:" + DEFAULT_ALPHABET + "}") String alphabet,
-            @Value("${shorturl.generator.min-code-length:6}") int minCodeLength) {
+            @Value("${shorturl.generator.min-code-length:6}") int minCodeLength,
+            @Value("${shorturl.generator.scramble-key:2654435761}") long scrambleKey) {
+
         if (alphabet.length() != 62 || alphabet.chars().distinct().count() != 62) {
             throw new IllegalArgumentException(
                     "shorturl.generator.alphabet must be exactly 62 unique characters");
@@ -28,8 +35,27 @@ public class Base62ShortCodeGenerator implements ShortCodeGenerator {
             throw new IllegalArgumentException(
                     "shorturl.generator.min-code-length must be between 1 and " + MAX_CODE_LENGTH);
         }
+        if (scrambleKey <= 0) {
+            throw new IllegalArgumentException(
+                    "shorturl.generator.scramble-key must be positive");
+        }
+
+        long offset = 1L;
+        for (int i = 0; i < minCodeLength - 1; i++) {
+            offset *= 62;
+        }
+        long range = offset * 61;
+
+        if (!BigInteger.valueOf(scrambleKey).gcd(BigInteger.valueOf(range)).equals(BigInteger.ONE)) {
+            throw new IllegalArgumentException(
+                    "shorturl.generator.scramble-key must be coprime with range size " + range);
+        }
+
         this.alphabet = alphabet;
         this.minCodeLength = minCodeLength;
+        this.scrambleKey = scrambleKey;
+        this.codeOffset = offset;
+        this.rangeSize = range;
     }
 
     @Override
@@ -39,10 +65,10 @@ public class Base62ShortCodeGenerator implements ShortCodeGenerator {
 
     @Override
     public String generateFromId(Long id) {
-        String code = Base62.encode(id, alphabet);
+        long scrambled = (id * scrambleKey) % rangeSize;
+        String code = Base62.encode(scrambled + codeOffset, alphabet);
         assert code.length() <= MAX_CODE_LENGTH : "short code overflow for id=" + id;
-        String pad = String.valueOf(alphabet.charAt(0));
-        return pad.repeat(Math.max(0, minCodeLength - code.length())) + code;
+        return code;
     }
 
     @Override
