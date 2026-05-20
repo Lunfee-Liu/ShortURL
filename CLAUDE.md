@@ -103,6 +103,16 @@ src/main/resources/
 - 索引设计：高基数字段加索引（短码），长 URL 不加索引
 - 所有表必须有 `id`、`created_at`、`updated_at`、`is_deleted`（逻辑删除）
 
+## 短码格式规范
+- **字符集**：`shorturl.generator.alphabet` 配置的乱序 Base62 字母表（62 个不重复字符）
+- **最小长度**：`shorturl.generator.min-code-length`（默认 6），不足时以字母表首字符左补
+- **最大长度**：8（受 `short_code VARCHAR(8)` 约束），这是系统设计容量上限
+  - 系统最多支持 62⁸ ≈ 2180 亿条短链；超出属于容量耗尽，不是运行时异常
+  - `generateFromId` 内部用 `assert code.length() <= 8` 拦截（需 JVM 启用 `-ea`）
+- **反枚举性**：乱序字母表使连续 ID 映射到不连续短码，提升枚举攻击成本
+- **不可逆性**：同一配置下相同 ID 总是产生相同短码；切换字母表配置会导致历史映射失效
+- **阶段二演进**：切换到号段（Segment）方案后仍使用乱序字母表编码，继承反枚举特性
+
 ## MyBatis
 - 简单 CRUD 用 generator 生成的 mapper
 - 复杂查询写在 XML 中，**不用注解 SQL**（`@Select` 等只在单行简单查询时用）
