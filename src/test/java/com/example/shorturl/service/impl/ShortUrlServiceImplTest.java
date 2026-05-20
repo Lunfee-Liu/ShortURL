@@ -123,8 +123,28 @@ class ShortUrlServiceImplTest {
                 .isInstanceOf(BizException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_FOUND);
 
-        // Empty marker cached
+        // DB queried twice (double-check before writing EMPTY_MARKER)
+        verify(shortUrlMapper, times(2)).selectByShortCode("missing");
         verify(cacheService).cacheEmpty("missing");
+    }
+
+    @Test
+    void getOriginalUrlCacheMissRaceConditionRecovery() {
+        // Simulates: first DB query misses, concurrent write commits, second DB query hits
+        ShortUrlDO record = new ShortUrlDO();
+        record.setShortCode("3tdk01");
+        record.setOriginalUrl("https://example.com");
+
+        when(cacheService.getOriginalUrl("3tdk01")).thenReturn(null);
+        when(shortUrlMapper.selectByShortCode("3tdk01"))
+                .thenReturn(null)    // first query: concurrent write not yet committed
+                .thenReturn(record); // second query: concurrent write has committed
+
+        ShortUrlQueryVO vo = shortUrlService.getOriginalUrl("3tdk01");
+
+        assertThat(vo.getOriginalUrl()).isEqualTo("https://example.com");
+        verify(cacheService).cacheShortUrl("3tdk01", "https://example.com");
+        verify(cacheService, never()).cacheEmpty(anyString());
     }
 
     @Test

@@ -77,6 +77,11 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         // Cache miss: query DB
         ShortUrlDO record = shortUrlMapper.selectByShortCode(shortCode);
         if (record == null) {
+            // Double-check before writing EMPTY_MARKER: a concurrent write may have committed
+            // between our first SELECT (miss) and now. If so, cache the real URL and return.
+            record = shortUrlMapper.selectByShortCode(shortCode);
+        }
+        if (record == null) {
             cacheService.cacheEmpty(shortCode);
             throw new BizException(ErrorCode.NOT_FOUND, "short code not found: " + shortCode);
         }
