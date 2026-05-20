@@ -67,7 +67,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     }
 
     @Override
-    @RecordAccessLog
+    @RecordAccessLog  // must be on the impl, not the interface — CGLIB proxy ignores interface annotations
     public ShortUrlQueryVO getOriginalUrl(String shortCode) {
         // Cache-aside pattern
         String cached = cacheService.getOriginalUrl(shortCode);
