@@ -17,7 +17,6 @@ public class Base62ShortCodeGenerator implements ShortCodeGenerator {
     private static final int PLACEHOLDER_HASH_LIMIT = 100_000;
 
     private final String alphabet;
-    private final int minCodeLength;
     private final long scrambleKey;
     private final long codeOffset;  // = 62^(minCodeLength-1)
     private final long rangeSize;   // = codeOffset * 61，乘法置换的值域大小
@@ -52,7 +51,6 @@ public class Base62ShortCodeGenerator implements ShortCodeGenerator {
         }
 
         this.alphabet = alphabet;
-        this.minCodeLength = minCodeLength;
         this.scrambleKey = scrambleKey;
         this.codeOffset = offset;
         this.rangeSize = range;
