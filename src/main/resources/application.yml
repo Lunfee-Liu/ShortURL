@@ -32,6 +32,28 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: "true"
+    consumer:
+      group-id: access-log-recorder
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      max-poll-records: 500
+      properties:
+        spring.json.trusted.packages: "com.example.shorturl.dto"
+        fetch.max.wait.ms: 1000
+    listener:
+      type: batch
+      ack-mode: manual_immediate
+
 shorturl:
   base-url: http://localhost:8080
   generator:
