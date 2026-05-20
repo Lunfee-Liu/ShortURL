@@ -1,6 +1,7 @@
 package com.example.shorturl.service.impl;
 
 import com.example.shorturl.annotation.RecordAccessLog;
+import com.example.shorturl.annotation.Retryable;
 import com.example.shorturl.common.ErrorCode;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,6 +36,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     private String baseUrl;
 
     @Override
+    @Retryable(retryFor = DuplicateKeyException.class, maxAttempts = 3)
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public ShortUrlVO createShortUrl(CreateShortUrlDTO dto) {
         String originalUrl = dto.getUrl();
