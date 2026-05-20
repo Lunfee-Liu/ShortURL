@@ -1,21 +1,21 @@
 package com.example.shorturl.service.impl;
 
 import com.example.shorturl.common.ErrorCode;
-import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
+import com.example.shorturl.event.ShortUrlCreatedEvent;
 import com.example.shorturl.exception.BizException;
 import com.example.shorturl.generator.ShortCodeGenerator;
 import com.example.shorturl.mapper.ShortUrlMapper;
+import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.service.ShortUrlService;
 import com.example.shorturl.vo.ShortUrlQueryVO;
 import com.example.shorturl.vo.ShortUrlVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +27,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     private final ShortUrlMapper shortUrlMapper;
     private final ShortCodeGenerator shortCodeGenerator;
     private final ShortUrlCacheService cacheService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${shorturl.base-url:http://localhost:8080}")
     private String baseUrl;
@@ -50,15 +51,8 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         record.setShortCode(shortCode);
         shortUrlMapper.updateByPrimaryKey(record);
 
-        // Phase 3: write to Redis cache after transaction commits
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    cacheService.cacheShortUrl(shortCode, originalUrl);
-                }
-            });
-        }
+        // Phase 3: publish event — cache write happens after transaction commits
+        eventPublisher.publishEvent(new ShortUrlCreatedEvent(shortCode, originalUrl));
 
         // Phase 4: build VO
         ShortUrlVO vo = new ShortUrlVO();

@@ -1,13 +1,14 @@
 package com.example.shorturl.service.impl;
 
 import com.example.shorturl.common.ErrorCode;
-import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
+import com.example.shorturl.event.ShortUrlCreatedEvent;
 import com.example.shorturl.exception.BizException;
 import com.example.shorturl.generator.ShortCodeGenerator;
 import com.example.shorturl.generator.strategy.Base62ShortCodeGenerator;
 import com.example.shorturl.mapper.ShortUrlMapper;
+import com.example.shorturl.service.ShortUrlCacheService;
 import com.example.shorturl.service.ShortUrlService;
 import com.example.shorturl.vo.ShortUrlQueryVO;
 import com.example.shorturl.vo.ShortUrlVO;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,13 +36,16 @@ class ShortUrlServiceImplTest {
     @Mock
     private ShortUrlCacheService cacheService;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private final ShortCodeGenerator shortCodeGenerator =
             new Base62ShortCodeGenerator(Base62ShortCodeGenerator.DEFAULT_ALPHABET, 6, 2_654_435_761L);
     private ShortUrlService shortUrlService;
 
     @BeforeEach
     void setUp() {
-        shortUrlService = new ShortUrlServiceImpl(shortUrlMapper, shortCodeGenerator, cacheService);
+        shortUrlService = new ShortUrlServiceImpl(shortUrlMapper, shortCodeGenerator, cacheService, eventPublisher);
         ReflectionTestUtils.setField(shortUrlService, "baseUrl", "http://localhost:8080");
     }
 
@@ -73,6 +78,9 @@ class ShortUrlServiceImplTest {
         // Verify update was called with real short code
         verify(shortUrlMapper).updateByPrimaryKey(argThat(record ->
                 "3tdk01".equals(record.getShortCode()) && record.getId() == 1L));
+
+        // Verify event published (cache write delegated to listener)
+        verify(eventPublisher).publishEvent(new ShortUrlCreatedEvent("3tdk01", "https://example.com/path"));
     }
 
     @Test
