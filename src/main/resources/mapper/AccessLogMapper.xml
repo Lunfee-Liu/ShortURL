@@ -15,4 +15,34 @@
         </foreach>
     </insert>
 
+    <!-- Admin queries -->
+    <sql id="Access_Log_Base_Columns">
+        id, short_code, ip, user_agent, referer, accessed_at
+    </sql>
+
+    <sql id="Access_Log_Date_Where">
+        WHERE is_deleted = 0
+          AND short_code = #{shortCode}
+        <if test="start != null">
+            AND accessed_at &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND accessed_at &lt; #{end}
+        </if>
+    </sql>
+
+    <select id="selectPageByShortCode" resultType="com.example.shorturl.entity.AccessLogDO">
+        SELECT <include refid="Access_Log_Base_Columns"/>
+        FROM access_logs
+        <include refid="Access_Log_Date_Where"/>
+        ORDER BY accessed_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByShortCode" resultType="long">
+        SELECT COUNT(*)
+        FROM access_logs
+        <include refid="Access_Log_Date_Where"/>
+    </select>
+
 </mapper>

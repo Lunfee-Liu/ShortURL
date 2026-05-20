@@ -62,4 +62,47 @@
         WHERE id = #{id,jdbcType=BIGINT}
     </update>
 
+    <!-- Admin: paginated list with visit_count aggregated from access_logs -->
+    <resultMap id="AdminShortUrlVOMap" type="com.example.shorturl.vo.AdminShortUrlVO">
+        <id     column="id"           property="id"/>
+        <result column="short_code"   property="shortCode"/>
+        <result column="original_url" property="originalUrl"/>
+        <result column="visit_count"  property="visitCount"/>
+        <result column="created_at"   property="createdAt"/>
+        <result column="updated_at"   property="updatedAt"/>
+    </resultMap>
+
+    <sql id="Admin_Where">
+        WHERE s.is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (s.short_code LIKE CONCAT('%', #{keyword}, '%')
+              OR s.original_url LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="selectAdminPage" resultMap="AdminShortUrlVOMap">
+        SELECT s.id,
+               s.short_code,
+               s.original_url,
+               s.created_at,
+               s.updated_at,
+               COALESCE(a.visit_count, 0) AS visit_count
+        FROM short_urls s
+        LEFT JOIN (
+            SELECT short_code, COUNT(*) AS visit_count
+            FROM access_logs
+            WHERE is_deleted = 0
+            GROUP BY short_code
+        ) a ON s.short_code = a.short_code
+        <include refid="Admin_Where"/>
+        ORDER BY s.created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAdmin" resultType="long">
+        SELECT COUNT(*)
+        FROM short_urls s
+        <include refid="Admin_Where"/>
+    </select>
+
 </mapper>
