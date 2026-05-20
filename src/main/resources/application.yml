@@ -34,6 +34,10 @@ spring:
 
 shorturl:
   base-url: http://localhost:8080
+  generator:
+    # 62 个不重复字符的乱序排列，决定短码字符映射关系
+    alphabet: "n6j7K0qzWNPk3sYBo1HRSXmAgdV9fUcEbiDhlGpQruv2FetywM4TxaLJ5ZOCI8"
+    min-code-length: 6
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
