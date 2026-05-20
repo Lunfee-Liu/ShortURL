@@ -38,6 +38,8 @@ shorturl:
     # 62 个不重复字符的乱序排列，决定短码字符映射关系
     alphabet: "n6j7K0qzWNPk3sYBo1HRSXmAgdV9fUcEbiDhlGpQruv2FetywM4TxaLJ5ZOCI8"
     min-code-length: 6
+    # 乘法置换密钥，必须与 rangeSize(62^(n-1)*61) 互质，用于打散顺序 ID
+    scramble-key: 2654435761
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
