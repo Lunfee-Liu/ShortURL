@@ -18,7 +18,7 @@ public class AccessLogConsumer {
 
     private final AccessLogPersistenceService persistenceService;
 
-    @KafkaListener(topics = KafkaConfig.ACCESS_LOG_TOPIC)
+    @KafkaListener(topics = KafkaConfig.ACCESS_LOG_TOPIC, concurrency = "3")
     public void consume(List<AccessLogBO> records, Acknowledgment ack) {
         if (records.isEmpty()) {
             ack.acknowledge();

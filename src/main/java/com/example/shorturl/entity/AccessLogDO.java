@@ -16,9 +16,12 @@ import java.time.LocalDateTime;
 public class AccessLogDO {
     private Long id;
     private String shortCode;
+    private String originalUrl;
     private String ip;
     private String userAgent;
     private String referer;
     private LocalDateTime accessedAt;
+    private Byte isDeleted;
+    private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 }

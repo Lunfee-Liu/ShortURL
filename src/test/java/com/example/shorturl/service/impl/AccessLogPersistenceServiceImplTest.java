@@ -42,11 +42,13 @@ class AccessLogPersistenceServiceImplTest {
         List<AccessLogDO> inserted = captor.getValue();
         assertThat(inserted).hasSize(2);
         assertThat(inserted.get(0).getShortCode()).isEqualTo("abc123");
+        assertThat(inserted.get(0).getOriginalUrl()).isEqualTo("https://x.com");
         assertThat(inserted.get(0).getIp()).isEqualTo("1.2.3.4");
         assertThat(inserted.get(0).getUserAgent()).isEqualTo("curl/8");
         assertThat(inserted.get(0).getReferer()).isNull();
         assertThat(inserted.get(0).getAccessedAt()).isEqualTo(now);
         assertThat(inserted.get(1).getShortCode()).isEqualTo("def456");
+        assertThat(inserted.get(1).getOriginalUrl()).isEqualTo("https://y.com");
         assertThat(inserted.get(1).getReferer()).isEqualTo("https://ref.com");
     }
 }

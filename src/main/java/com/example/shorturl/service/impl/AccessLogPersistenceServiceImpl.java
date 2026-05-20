@@ -24,6 +24,7 @@ public class AccessLogPersistenceServiceImpl implements AccessLogPersistenceServ
         List<AccessLogDO> logs = records.stream()
                 .map(bo -> AccessLogDO.builder()
                         .shortCode(bo.shortCode())
+                        .originalUrl(bo.originalUrl())
                         .ip(bo.clientIp())
                         .userAgent(bo.userAgent())
                         .referer(bo.referer())

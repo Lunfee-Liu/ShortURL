@@ -136,6 +136,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- Required for Mockito inline mock agent (ByteBuddy) to instrument
+                         JDK classes (Object, lang, util) on JDK 21 with module system -->
                     <argLine>
                         --add-opens java.base/java.lang=ALL-UNNAMED
                         --add-opens java.base/java.util=ALL-UNNAMED

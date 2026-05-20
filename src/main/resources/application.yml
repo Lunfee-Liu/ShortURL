@@ -37,6 +37,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: "true"
     consumer:
       group-id: access-log-recorder
       auto-offset-reset: earliest
