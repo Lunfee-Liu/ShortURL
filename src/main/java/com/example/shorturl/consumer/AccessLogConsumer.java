@@ -2,11 +2,11 @@ package com.example.shorturl.consumer;
 
 import com.example.shorturl.config.KafkaConfig;
 import com.example.shorturl.dto.AccessLogBO;
-import com.example.shorturl.entity.AccessLogDO;
-import com.example.shorturl.mapper.AccessLogMapper;
+import com.example.shorturl.service.AccessLogPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,27 +16,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccessLogConsumer {
 
-    private final AccessLogMapper accessLogMapper;
+    private final AccessLogPersistenceService persistenceService;
 
     @KafkaListener(topics = KafkaConfig.ACCESS_LOG_TOPIC)
-    public void consume(List<AccessLogBO> records) {
+    public void consume(List<AccessLogBO> records, Acknowledgment ack) {
         if (records.isEmpty()) {
+            ack.acknowledge();
             return;
         }
-        List<AccessLogDO> logs = records.stream()
-                .map(bo -> AccessLogDO.builder()
-                        .shortCode(bo.shortCode())
-                        .ip(bo.clientIp())
-                        .userAgent(bo.userAgent())
-                        .referer(bo.referer())
-                        .accessedAt(bo.accessedAt())
-                        .build())
-                .toList();
         try {
-            accessLogMapper.batchInsert(logs);
-            log.debug("Batch inserted {} access logs", logs.size());
+            persistenceService.batchPersist(records);
+            ack.acknowledge();
+            log.debug("Consumed and persisted {} access logs", records.size());
         } catch (Exception e) {
-            log.error("Failed to batch insert access logs, count={}", logs.size(), e);
+            log.error("Failed to persist access logs batch, count={}, firstCode={}",
+                    records.size(), records.get(0).shortCode(), e);
             throw e;
         }
     }

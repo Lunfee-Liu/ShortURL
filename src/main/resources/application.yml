@@ -48,6 +48,7 @@ spring:
         fetch.max.wait.ms: 1000
     listener:
       type: batch
+      ack-mode: manual_immediate
 
 shorturl:
   base-url: http://localhost:8080
