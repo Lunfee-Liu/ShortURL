@@ -209,7 +209,8 @@ mvn mybatis-generator:generate
   - 访问日志：按短码查看访问记录（IP、UA、时间）
   - Redis 监控：当前缓存 key 列表、TTL、命中率
   - Kafka 监控：topic offset、consumer group lag、消息堆积数
-- [ ] M5: 压测（JMeter / wrk）验证单节点 5-10k QPS + 多节点扩容线性验证
+- [ ] M5: Caffeine 二级缓存 + Redis 分布式限流 + Actuator 监控
+- [ ] M6: 压测（JMeter / wrk）验证单节点 5-10k QPS + 多节点扩容线性验证
 
 ---
 
