@@ -34,7 +34,8 @@ class ShortUrlServiceImplTest {
     @Mock
     private ShortUrlCacheService cacheService;
 
-    private final ShortCodeGenerator shortCodeGenerator = new Base62ShortCodeGenerator();
+    private final ShortCodeGenerator shortCodeGenerator =
+            new Base62ShortCodeGenerator(Base62ShortCodeGenerator.DEFAULT_ALPHABET, 6);
     private ShortUrlService shortUrlService;
 
     @BeforeEach
@@ -59,8 +60,8 @@ class ShortUrlServiceImplTest {
 
         ShortUrlVO vo = shortUrlService.createShortUrl(dto);
 
-        assertThat(vo.getShortCode()).isEqualTo("1");
-        assertThat(vo.getShortUrl()).isEqualTo("http://localhost:8080/1");
+        assertThat(vo.getShortCode()).isEqualTo("000001");
+        assertThat(vo.getShortUrl()).isEqualTo("http://localhost:8080/000001");
         assertThat(vo.getOriginalUrl()).isEqualTo("https://example.com/path");
 
         // Verify placeholder starts with ~
@@ -71,7 +72,7 @@ class ShortUrlServiceImplTest {
 
         // Verify update was called with real short code
         verify(shortUrlMapper).updateByPrimaryKey(argThat(record ->
-                "1".equals(record.getShortCode()) && record.getId() == 1L));
+                "000001".equals(record.getShortCode()) && record.getId() == 1L));
     }
 
     @Test
@@ -142,6 +143,6 @@ class ShortUrlServiceImplTest {
 
         ShortUrlVO vo = shortUrlService.createShortUrl(dto);
 
-        assertThat(vo.getShortCode()).isEqualTo("10");
+        assertThat(vo.getShortCode()).isEqualTo("000010");
     }
 }
