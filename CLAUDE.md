@@ -153,10 +153,7 @@ src/main/resources/
 # 常用命令
 
 ```bash
-# 前置条件：必须使用 JDK 21（Maven Enforcer 会校验版本，版本不符直接报错）
-# 推荐通过 jenv / asdf 管理多版本；或在 shell profile 中设置：
-# export JAVA_HOME=$(/usr/libexec/java_home -v 21)   # macOS
-# export JAVA_HOME=/usr/lib/jvm/java-21-openjdk       # Linux
+# 前置条件：需要 JDK 21（Maven Enforcer 会自动校验，版本不符直接报错）
 
 # 启动依赖环境（MySQL + Redis + Kafka）
 docker-compose up -d
