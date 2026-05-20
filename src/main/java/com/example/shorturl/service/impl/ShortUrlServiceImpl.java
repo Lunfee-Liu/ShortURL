@@ -1,5 +1,6 @@
 package com.example.shorturl.service.impl;
 
+import com.example.shorturl.annotation.RecordAccessLog;
 import com.example.shorturl.common.ErrorCode;
 import com.example.shorturl.dto.CreateShortUrlDTO;
 import com.example.shorturl.entity.ShortUrlDO;
@@ -63,6 +64,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     }
 
     @Override
+    @RecordAccessLog
     public ShortUrlQueryVO getOriginalUrl(String shortCode) {
         // Cache-aside pattern
         String cached = cacheService.getOriginalUrl(shortCode);
